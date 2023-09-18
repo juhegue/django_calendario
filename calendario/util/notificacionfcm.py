@@ -37,7 +37,7 @@ class NotificacionFcm(object):
                                              sound="Default")
                     if result.get("success"):
                         break
-                    time.sleep(3)
+                    time.sleep(1)
                 logger.info("NotificacionFcm[RESULT]: %s" % result)
 
             except Exception as e:

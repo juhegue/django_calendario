@@ -29,7 +29,7 @@ def envia_movil(qevento):
 
     logger.info(f"envia_movil:{periodo}")
     n = NotificacionFcm(qevento.usuario)
-    n.aviso('Notas notifiación', f'{periodo}\n{qevento.titulo}')
+    n.aviso('Calendario', f'{periodo}\n{qevento.titulo}')
 
 
 def envia_mail(qevento):
@@ -62,7 +62,7 @@ def procesa_eventos():
     for qevento in AgendaEvento.objects.filter(dia_completo=True,
                                                inicio__lte=inicio,
                                                fin__gte=ahora):
-        logger.info(f"evento:{qevento.id}")
+        logger.info(f"evento completo:{qevento.id}")
         if qevento.aviso_email and not qevento.email_enviado:
             envia_mail(qevento)
             qevento.email_enviado = ahora
@@ -77,7 +77,7 @@ def procesa_eventos():
     for qevento in AgendaEvento.objects.filter(dia_completo=False,
                                                inicio__lte=inicio,
                                                fin__gte=ahora):
-        logger.info(f"evento:{qevento.id}")
+        logger.info(f"evento parcial:{qevento.id}")
         if qevento.aviso_email and not qevento.email_enviado:
             envia_mail(qevento)
             qevento.email_enviado = ahora
@@ -92,7 +92,7 @@ def procesa_eventos():
     for qevento in AgendaEvento.objects.filter(inicio_enviado__isnull=True,
                                                inicio__gte=inicio,
                                                inicio__lte=ahora):
-        logger.info(f"evento:{qevento.id}")
+        logger.info(f"evento inicio:{qevento.id}")
         if qevento.aviso_email:
             envia_mail(qevento)
 
