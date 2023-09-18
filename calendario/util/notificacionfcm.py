@@ -26,18 +26,14 @@ class NotificacionFcm(object):
                 data.update(data_extra)
 
             try:
-                for i in range(1, 4):
-                    result = FCMNotification(api_key=server_key). \
-                        notify_single_device(registration_id=fcm_token,
-                                             message_title=msg_title,
-                                             message_body=msg_body,
-                                             # message_icon=msg_icon,
-                                             data_message=data,
-                                             click_action="FLUTTER_NOTIFICATION_CLICK",
-                                             sound="Default")
-                    if result.get("success"):
-                        break
-                    time.sleep(1)
+                result = FCMNotification(api_key=server_key). \
+                    notify_single_device(registration_id=fcm_token,
+                                         message_title=msg_title,
+                                         message_body=msg_body,
+                                         # message_icon=msg_icon,
+                                         data_message=data,
+                                         click_action="FLUTTER_NOTIFICATION_CLICK",
+                                         sound="Default")
                 logger.info("NotificacionFcm[RESULT]: %s" % result)
 
             except Exception as e:
