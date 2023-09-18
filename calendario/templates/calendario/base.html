@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+    {% load i18n %}
+    {% load static %}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Calendario">
+        <meta name="author" content="Juhegue">
+        <link rel="icon" href="{% static 'calendario/images/calendario.png' %}">
+
+        <title>
+            {% block titlehead %}
+            {% endblock titlehead %}
+        </title>
+
+        {% block styles_base %}
+            <link href="{% static 'calendario/vendor/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet">
+            <link href="{% static 'calendario/vendor/bootstrap-4.6.2-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+            <link href="{% static 'calendario/vendor/select2/dist/css/select2.min.css' %}" rel="stylesheet">
+        	<link href="{% static 'calendario/vendor/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" />
+            <link href="{% static 'calendario/css/calendario.css' %}" rel="stylesheet">
+        {% endblock styles_base %}
+
+        {% block styles %}
+            {{ form.media.css }}
+        {% endblock styles %}
+    </head>
+
+    <body>
+        {% block header %}
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="url 'index' %}">
+                    <img src="{% static 'calendario/images/calendario.png' %}" alt="Calendario" width="30px;" height="30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item {% if nav_activa == 'calendario' %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'calendario' %}">Calendario<span class="sr-only">(current)</span></a>
+                        </li>
+                        {% if user.is_staff %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/" target="_blank">Admin</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    {% if user.is_authenticated  %}
+                        <ul class="navbar-nav align-right">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ user.email }}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{% url 'logout' %}">
+                                        <i class="fa fa-sign-out"></i>Salir
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </nav>
+        {% endblock header %}
+
+        {% block nucleocentral %}
+        <main role="main" class="container-fluid" {% if hidden %} hidden {% endif %}>
+            {% block content %}
+            {% endblock content %}
+        </main>
+        {% endblock nucleocentral %}
+
+       {% block footer %}
+            <footer class="footer d-flex justify-content-between">
+                <div>
+                    <a href="javascript:void(0)" onclick="showApk();return false;" title="Descarga Apk aviso notificaciones android.">
+                        &nbsp; Apk notificación
+                    </a>
+                </div>
+                <div>
+                    <span>Desarrollado por </span>
+                    <a href="https://github.com/juhegue" target="_blank">Juhegue</a> &nbsp;&nbsp;
+                </div>
+            </footer>
+        {% endblock footer %}
+
+        {% block scripts_base %}
+            <script src="{% static 'calendario/vendor/jquery-3.5.1.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/jquery.cookie.js' %}"></script>
+            <script src="{% static 'calendario/vendor/moment/min/moment.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/moment/locale/es.js' %}"></script>
+            <script src="{% static 'calendario/vendor/popper/popper-1.16.0.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootbox/bootbox.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootbox/bootbox.locales.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/sprintf/sprintf.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootbox/bootbox.all.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootbox/bootbox.locales.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/select2/dist/js/select2.full.min.js' %}"></script>
+            <script src="{% static 'calendario/vendor/select2/dist/js/i18n/es.js' %}"></script>
+            <script src="{% static 'calendario/js/utiles.js' %}"></script>
+        	<script src="{% static 'calendario/js/select2.js' %}"></script>
+        	<script src="{% static 'calendario/js/datetimepicker.js' %}"></script>
+            {{ form.media.js }}
+            <script>
+                {% if nav_activa != 'notas' %}
+                    window.addEventListener('resize', function(e) {
+                        reset_select2_size();
+                    });
+                {% endif %}
+                function showApk() {
+                    bootbox.dialog({
+                        closeButton: false,
+                        onEscape: function() {},
+                        //title: 'Evento',
+                        message: `
+                            <h3>Versiones Android</h3>
+                            <hr></hr>
+                            <ul style="font-size: 150%;">
+                                <li><a href="{% static 'calendario/app-armeabi-v7a-release.apk' %}"><i class="fa fa-download"></i> armeabi-v7a</a></li>
+                                <li><a href="{% static 'calendario/app-arm64-v8a-release.apk' %}"><i class="fa fa-download"></i> arm64-v8a <i class="fa fa-check" style="color:red;"></i></a></li>
+                                <li><a href="{% static 'calendario/app-x86_64-release.apk' %}"><i class="fa fa-download"></i> x86_64</a></li>
+                                <li><a href="{% static 'calendario/app-release.apk' %}"><i class="fa fa-download"></i> Single</a></li>
+                            </ul>
+                            <small clas="ttext-muted">Seleccione la adecuada a su movíl.</small>
+                        `,
+                        buttons: {
+                            cancel: {
+                                label: 'Cancelar',
+                                className: 'btn-secondary',
+                                callback: function (result) {
+                                }
+                            },
+                        }
+                    });
+                }
+            </script>
+        {% endblock scripts_base %}
+
+        {% block scripts %}
+        {% endblock scripts %}
+  </body>
+</html>

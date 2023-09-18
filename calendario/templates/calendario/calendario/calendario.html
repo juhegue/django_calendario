@@ -1,0 +1,90 @@
+{% extends 'calendario/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block styles %}
+	<link href="{% static 'calendario/vendor/select2/select2-bootstrap4.css' %}" rel="stylesheet">
+	<link href="{% static 'calendario/vendor/@fullcalendar/common/main.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'calendario/vendor/@fullcalendar/daygrid/main.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'calendario/vendor/@fullcalendar/timegrid/main.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'calendario/vendor/@fullcalendar/list/main.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'calendario/vendor/@fullcalendar/bootstrap/main.min.css' %}" rel="stylesheet" />
+	<style>
+		@media only screen and (max-width: 576px) {
+			.fc-toolbar-title {
+				font-size: 12px !important;
+			}
+			.fc-today-button, .fc-timeGridWeek-button{
+				display:none;
+			}
+		}
+	</style>
+{% endblock styles %}
+
+{% block titlehead %}
+    {% trans 'Calendario' %}
+{% endblock titlehead %}
+
+{% block content %}
+	<div class="container-fluid">
+		<br>
+		<div class="row justify-content-md-center">
+			<div class="col-md-3 order-md-1">
+				<div id="external-events" class="fc-event-list">
+					<div class="fc-event" data-color="#b6c2c9" data-event='{ "title": "{% trans "Nuevo Evento" %}", "duration": "24:00", "id": "0"}' title="{% trans 'Arraste a cualquier día para crear el evento' %}">
+						<div class="input-group">
+							 <div class="input-group-prepend btn-block fc-event-icon">
+								 <div class="input-group-text" id="btnGroupAddon">
+									 <i class="fa fa-circle" style="color:#b6c2c9;"></i>
+								 </div>
+								 <a class="btn btn-outline-primary btn-block cursor-move" href="#" aria-describedby="btnGroupAddon">
+									{% trans "Nuevo Evento" %}
+								 </a>
+							 </div>
+						</div>
+					</div>
+					<small class="mt-1 text-muted text-center">Arrastre el nuevo evento al calendario.</small>
+					<hr class="" />
+					<div style="height:5px;"></div>
+				</div>
+			</div>
+
+			<div id="calendar" class="col-md-8 order-md-2 calendar"></div>
+		</div>
+	</div>
+{% endblock content %}
+
+{% block scripts %}
+	<script type="text/javascript">
+		var colores = url_events = "{{ request.path }}",
+			csrf_token = "{{ csrf_token }}",
+			fcm_token = ("{{ request.user.fcm_token }}" == "None") ? 'disabled': '',
+			title_eliminar = "{% trans 'Eliminar evento' %}",
+			text_eliminar = "{% trans '¿Esta seguro de eliminar el evento?' %}",
+			text_aceptar = "{% trans 'Aceptar' %}",
+			text_cancelar = "{% trans 'Cancelar' %}",
+			title_nuevo_evento = "{% trans 'Nuevo evento' %}",
+			dia_comleto = "{% trans 'Día completo'  %}",
+			avisar_email = "{% trans 'Avisar email'  %}",
+			avisar_movil = "{% trans 'Avisar móvil'  %}",
+			inicio = "{% trans 'Inicio'  %}",
+			final = "{% trans 'Final (vacio día completo)'  %}",
+			des_evento = "{% trans 'Descripción evento'  %}",
+			sel_color = "{% trans 'Seleccione un color'  %}",
+			color_hexa = `{% trans "Elija o añada un color en hexadecimal."  %}`,
+			requerido = "{% trans 'Valor requerido'  %}",
+			mail_enviado = "{% trans 'Enviado' %}",
+			movil_enviado = "{% trans 'Enviado' %}";
+	</script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/core/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/core/locales-all.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/core/locales-all.global.min.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/daygrid/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/timegrid/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/interaction/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/list/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/bootstrap/main.global.js' %}"></script>
+	<script src="{% static 'calendario/vendor/@fullcalendar/core/locales-all.global.js' %}"></script>
+	<script nomodule src="{% static 'calendario/vendor/@fullcalendar/core/main.js' %}"></script>
+	<script src="{% static 'calendario/js/calendario.js' %}"></script>
+{% endblock scripts %}

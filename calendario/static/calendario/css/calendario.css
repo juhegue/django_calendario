@@ -1,0 +1,106 @@
+/* botones */
+
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+body {
+    margin: 0;
+    margin-bottom: 30px;
+}
+
+.float-logo {
+    top: 20px;
+    left: 20px;
+    position: fixed;
+}
+
+.footer {
+    background-color: var(--dark);
+    color: var(--white);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+}
+
+
+.control-label, .custom-control-label, .col-form-label {
+    font-weight: bold;
+}
+
+/* Campos obligatorios */
+.required_fields {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+
+/* Error validator */
+label.error {
+    color: #ba2121;
+    font-weight: normal;
+}
+
+
+/* Error label */
+ul.errorlist {
+    color: #ba2121;
+    padding: 0 0 0 15px;
+}
+
+
+/* Error message */
+.alert-error {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.navbar {
+    padding: 0rem 2rem;
+}
+
+.select2-container--default .select2-results>.select2-results__options {
+    max-height: 500px;
+    overflow-y: auto;
+}
+.select2-selection__rendered {
+    line-height: 36px !important;
+}
+.select2-container .select2-selection--single {
+    height: 38px !important;
+}
+.select2-selection__arrow {
+    height: 37px !important;
+}
+.select2-color-cuadro {
+    border:1px solid black;
+    margin-top:10px;
+    margin-left:15px;
+    height: 20px;
+    width: 80px;
+}
+.select2-color-texto-selection {
+    margin-top: -30px;
+    margin-left: 105px;
+}
+.select2-color-texto {
+    margin-top: -24px;
+    margin-left: 105px;
+}
+
+.cursor-move {
+    cursor: move !important;
+}
+
+.table td, .table th {
+  padding: .25rem;
+}
+.detail-icon {
+  margin-left: .40rem;
+}
+
+footer a:hover, footer a:active, footer a:link, footer a:visited{
+    color: var(--light);
+}

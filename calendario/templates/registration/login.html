@@ -1,0 +1,39 @@
+{% extends 'calendario/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block titlehead %}
+    {% trans 'Login' %}
+{% endblock titlehead %}
+
+{% block content %}
+	<div class="container-fluid">
+		<br>
+		<br>
+        <div class="row justify-content-md-center">
+          <div class="col-md-3 order-md-1">
+            <form class="form-signin" method="post">
+                {% csrf_token %}
+                <div class="text-center mb-4">
+                    <img class="mb-4" src="{% static 'calendario/images/calendario.png' %}" alt="" width="72">
+                    <h1 class="h3 mb-3 font-weight-normal">Calendario</h1>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="email" id="{{form.username.auto_id}}" class="form-control" placeholder="{{ form.username.label }}" name="username" required>
+                    <label for="{{form.username.auto_id}}"></label>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="password" id="{{form.password.auto_id}}" class="form-control" placeholder="{{ form.password.label }}" name="password" required>
+                    <label for="{{form.password.auto_id}}"></label>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Acceder</button>
+                <p class="mt-5 mb-3 text-muted text-center">&copy; juhegue - 2023</p>
+              </form>
+          </div>
+        </div>
+	</div>
+{% endblock content %}
+
