@@ -8,6 +8,7 @@ from django.conf.locale.es import formats as es_fotmats
 
 from .models import AgendaEvento
 from .models import AgendaEventoColor
+from .models import AgendaEventoPredefinido
 from .models import Fcm
 
 from .util.notificacionfcm import NotificacionFcm
@@ -55,6 +56,17 @@ class AgendaEventoColorAdmin(admin.ModelAdmin, Color):
 
 
 admin.site.register(AgendaEventoColor, AgendaEventoColorAdmin)
+
+
+class AgendaEventoArrastrarAdmin(admin.ModelAdmin, Color):
+    list_display = ('usuario', '_color', 'inicio', 'duracion', 'titulo')
+    ordering = ('usuario', 'duracion')
+    search_fields = ('usuario', 'color', 'duracion', 'titulo')
+    field_date_filter = 'creado'
+    list_filter = ['usuario', MesFilter]
+
+
+admin.site.register(AgendaEventoPredefinido, AgendaEventoArrastrarAdmin)
 
 
 class FcmAdmin(admin.ModelAdmin):

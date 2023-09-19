@@ -43,8 +43,29 @@
 							 </div>
 						</div>
 					</div>
-					<small class="mt-1 text-muted text-center">Arrastre el nuevo evento al calendario.</small>
 					<hr class="" />
+					<a class="btn btn-secondary btn-block" href="{% url 'evento_predefinido_lista' %}" title="{% trans 'Crear eventos predefinidos' %}">
+						<i class="fa fa-eye"></i>
+						{% trans 'Predefinidos' %}
+					</a>
+					{% for evento in eventos %}
+						{% if forloop.first %}
+							<hr class="" />
+							<h5>{% trans "Predefinidos" %}</h5>
+						{% endif %}
+						<div class="fc-event" data-color="{{evento.color}}" data-event='{ "title": "{{evento.title}}", "inicio": "{{evento.inicio}}", "duration": "{{evento.duracion}}", "id": "{{evento.id}}"}' title="{% trans 'Arrastre el evento al calendarío' %}" style="margin-top:4px;">
+							<div class="input-group">
+								<div class="input-group-prepend btn-block fc-event-icon">
+									<div class="input-group-text" id="btnGroupAddon_{{ forloop.counter }}">
+										<i class="fa fa-circle" style="color:{{evento.color}};"></i>
+									</div>
+									<a class="btn btn-outline-secondary btn-block cursor-move" href="#" aria-describedby="btnGroupAddon_{{ forloop.counter }}">
+										{{evento.title}}
+									</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
 					<div style="height:5px;"></div>
 				</div>
 			</div>

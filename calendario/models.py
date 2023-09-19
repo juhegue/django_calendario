@@ -57,6 +57,43 @@ class AgendaEvento(ActualizaMixin):
         return self.titulo
 
 
+class AgendaEventoPredefinido(ActualizaMixin):
+    usuario = models.ForeignKey(User, verbose_name=_('User'), on_delete=models.CASCADE)
+    color = models.ForeignKey(AgendaEventoColor, verbose_name=_('Color'), on_delete=models.CASCADE)
+    inicio = models.CharField(verbose_name=_('Hora inicio'), max_length=5, default='00:00')
+    duracion = models.PositiveIntegerField(verbose_name=_('Minutos duración'), default=0)
+    titulo = models.CharField(verbose_name=_('Título'), max_length=250)
+
+    class Meta:
+        verbose_name = _('Agenda evento predefinido')
+        verbose_name_plural = _('Agenda eventos predefinidos')
+
+    def __str__(self):
+        return self.titulo
+
+    @property
+    def horas(self):
+        minutos = self.duracion
+        horas = int(minutos / 60)
+        minutos -= horas * 60
+        return f'{str(horas).zfill(2)}:{str(minutos).zfill(2)}'
+
+    @property
+    def duracion_txt(self):
+        minutos = self.duracion
+        dias = int(minutos / 60 / 24)
+        minutos -= dias * 60 * 24
+        horas = int(minutos / 60)
+        minutos -= horas * 60
+        if dias:
+            if dias > 1:
+                return f'{dias} {_("Días")} {str(horas).zfill(2)}:{str(minutos).zfill(2)}'
+            else:
+                return f'1 {_("Día")} {str(horas).zfill(2)}:{str(minutos).zfill(2)}'
+        else:
+            return f'{str(horas).zfill(2)}:{str(minutos).zfill(2)}'
+
+
 # https://docs.djangoproject.com/en/dev/topics/auth/customizing/#extending-the-existing-user-model
 class Fcm(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

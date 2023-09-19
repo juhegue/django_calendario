@@ -1,0 +1,35 @@
+{% extends 'calendario/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block titlehead %}{% trans 'Eliminar Libro' %}{% endblock titlehead %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="" method="post" enctype="multipart/form-data" role="form" id="formulario">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="panel-title text-secondary">{% trans 'Borrar Evento Predefinido' %}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <strong>{% trans 'Atención!' %}</strong> {% trans 'Va a proceder a borrar un Evento Predefinido' %}.
+                        </div>
+                        <p>{% trans '¿Seguro que desea eliminar el evento predefinido' %}?: <b>{{ agendaeventopredefinido }}</b></p>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-danger" href="{% url 'evento_predefinido_lista' %}">
+                            <i class="fa fa-ban"></i>
+                            {% trans 'Cancelar' %}
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check"></i>
+                            {% trans 'Aceptar' %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

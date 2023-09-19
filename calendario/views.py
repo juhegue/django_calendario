@@ -3,14 +3,21 @@
 import json
 import pytz
 from datetime import datetime, timedelta
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.utils.timezone import make_aware
 from django.utils import timezone
 from django.conf import settings
+from django.contrib import messages
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.urls import reverse_lazy
+from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from calendario.models import AgendaEvento, AgendaEventoColor#, AgendaEventoPredefinido
+from calendario.models import AgendaEvento, AgendaEventoColor, AgendaEventoPredefinido
+from calendario.forms.eventoPredefinidoForm import EventoPedefinidoForm
 
 
 def is_ajax(request):
@@ -33,14 +40,29 @@ def get_color(request, color):
 
 
 def defecto_agenda(request):
-    if AgendaEventoColor.objects.filter(usuario=request.user).exists():
-        return
+    if not AgendaEventoColor.objects.filter(usuario=request.user).exists():
+        for color in ['#00ACAC', '#348FE2', '#F59C1A', '#FF5B57', '#2D353C', '#32A932', '#FV5597']:
+            c = AgendaEventoColor()
+            c.usuario = request.user
+            c.color = color
+            c.save()
 
-    for color in ['#00ACAC', '#348FE2', '#F59C1A', '#FF5B57', '#2D353C', '#32A932', '#FV5597']:
-        c = AgendaEventoColor()
-        c.usuario = request.user
-        c.color = color
-        c.save()
+    if not AgendaEventoPredefinido.objects.filter(usuario=request.user).exists():
+        p = AgendaEventoPredefinido()
+        p.usuario = request.user
+        p.color = AgendaEventoColor.objects.get(usuario=request.user, color='#00ACAC')
+        p.inicio = '00:00'
+        p.duracion = 60 * 24
+        p.titulo = 'Viaje'
+        p.save()
+
+        p = AgendaEventoPredefinido()
+        p.usuario = request.user
+        p.color = AgendaEventoColor.objects.get(usuario=request.user, color='#348FE2')
+        p.inicio = '15:30'
+        p.duracion = 60
+        p.titulo = 'Reunión'
+        p.save()
 
 
 class CalendarioView(LoginRequiredMixin, TemplateView):
@@ -50,8 +72,18 @@ class CalendarioView(LoginRequiredMixin, TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        defecto_agenda(self.request)
         context = super().get_context_data(**kwargs)
+        defecto_agenda(self.request)
+        eventos = list()
+        for q in AgendaEventoPredefinido.objects.filter(usuario=self.request.user):
+            eventos.append({
+                'id': q.pk,
+                'title': q.titulo,
+                'inicio': q.inicio,
+                'duracion': q.horas,
+                'color': q.color.color,
+            })
+        context['eventos'] = eventos
         context['nav_activa'] = 'calendario'
         return context
 
@@ -112,7 +144,17 @@ class CalendarioView(LoginRequiredMixin, TemplateView):
                     AgendaEvento.objects.filter(pk=data.get('id')).delete()
                 else:
                     if accion == 'receive':
-                        pass
+                        inicio = datetime.strptime(data.get('start'), '%d/%m/%Y %H:%M')
+                        inicio = pytz.timezone(settings.TIME_ZONE).localize(inicio).astimezone(pytz.timezone('UTC'))
+                        pre = AgendaEventoPredefinido.objects.filter(pk=data.get('id')).first()
+                        aevt = AgendaEvento()
+                        aevt.usuario = request.user
+                        aevt.color = pre.color
+                        aevt.titulo = pre.titulo
+                        aevt.dia_completo = True if pre.duracion % (60*24) == 0 and (pre.inicio == '00:00' or
+                                                                                     pre.inicio == '0:00') else False
+                        aevt.inicio = inicio
+                        aevt.fin = aevt.inicio + timedelta(minutes=pre.duracion)
                     else:
                         if accion in ['resize', 'drop']:
                             aevt = AgendaEvento.objects.filter(pk=data.get('id')).first()
@@ -175,3 +217,107 @@ class CalendarioView(LoginRequiredMixin, TemplateView):
                             'color': q.color.color,
                         })
                 return JsonResponse({'data': data})
+
+
+class RequiredEventoMixin(LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_anonymous:
+            pre = get_object_or_404(AgendaEventoPredefinido, pk=kwargs.get('pk'))
+            if pre.usuario != request.user:
+                messages.error(request, _('Sin permisos para esta acción.'))
+                return redirect('logout_portal')
+        return super().dispatch(request, *args, **kwargs)
+
+
+class EventoPredefinidoListView(LoginRequiredMixin, ListView):
+    model = AgendaEventoPredefinido
+    template_name = 'calendario/predefinido/lista.html'
+
+    def get_queryset(self):
+        queryset = AgendaEventoPredefinido.objects.filter(usuario=self.request.user).order_by('-id')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["hidden"] = True
+        return context
+
+
+class EventoPredefinidoCreateView(LoginRequiredMixin, CreateView):
+    model = AgendaEventoPredefinido
+    template_name = 'calendario/predefinido/editar.html'
+    form_class = EventoPedefinidoForm
+    success_url = reverse_lazy('evento_predefinido_lista')
+    success_message = _('Evento predefinido creado.')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["create_view"] = True
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['object'] = None
+        return kwargs
+
+    def form_valid(self, form):
+        f = form.save(commit=False)
+        data = form.cleaned_data
+        color = data.get('color')
+        dias = data.get('dias') or 0
+        horas = data.get('horas') or 0
+        minutos = data.get('minutos') or 0
+
+        f.color = get_color(self.request, color)
+        f.usuario = self.request.user
+        f.duracion = dias * 24 * 60 + horas * 60 + minutos
+        f.save()
+        messages.success(self.request, self.success_message)
+        return super().form_valid(form)
+
+
+class EventoPredefinidoUpdateView(RequiredEventoMixin, UpdateView):
+    model = AgendaEventoPredefinido
+    template_name = 'calendario/predefinido/editar.html'
+    form_class = EventoPedefinidoForm
+    success_url = reverse_lazy('evento_predefinido_lista')
+    success_message = _('Evento predefinido modificado.')
+
+    def get_queryset(self):
+        queryset = AgendaEventoPredefinido.objects.filter(usuario=self.request.user)
+        return queryset
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['object'] = self.object
+        return kwargs
+
+    def form_valid(self, form):
+        f = form.save(commit=False)
+        data = form.cleaned_data
+        color = data.get('color')
+        dias = data.get('dias') or 0
+        horas = data.get('horas') or 0
+        minutos = data.get('minutos') or 0
+
+        f.color = get_color(self.request, color)
+        f.duracion = dias * 24 * 60 + horas * 60 + minutos
+        f.save()
+        messages.success(self.request, self.success_message)
+        return super().form_valid(form)
+
+
+class EventoPredefinidoDeleteView(RequiredEventoMixin, DeleteView):
+    model = AgendaEventoPredefinido
+    template_name = 'calendario/predefinido/eliminar.html'
+    success_message = _('Evento prefefinido eliminado.')
+
+    def get_queryset(self):
+        queryset = AgendaEventoPredefinido.objects.filter(usuario=self.request.user)
+        return queryset
+
+    def get_success_url(self):
+        messages.success(self.request, self.success_message)
+        return reverse('evento_predefinido_lista')

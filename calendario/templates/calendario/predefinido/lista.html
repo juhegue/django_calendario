@@ -1,0 +1,119 @@
+{% extends 'calendario/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block titlehead %}{% trans 'Predefinido' %}{% endblock titlehead %}
+
+{% block styles %}
+    {{ block.super }}
+    <style>
+        .th-minimo {
+            width:90px;
+        }
+        .accion {
+            margin-left: 18px;
+        }
+        .color-cuadro {
+            border:1px solid black;
+            margin-top:0px;
+            margin-left:0px;
+            height: 20px;
+            width: 80px;
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
+	<div id="toolbar">
+        <a class="btn btn-primary" href="{% url 'evento_predefinido_nuevo' %}">
+            <i class='fa fa-plus-circle'></i>
+            {% trans 'Crear evento predefinido' %}
+        </a>
+	</div>
+    <div class="container-fluid" style="padding:.75rem;">
+        <h3 class="text-secondary">Eventos Predefinidos</h3>
+        <div class="dataTable_wrapper">
+            <table width="100%"
+                data-toolbar="#toolbar"
+                id="id_predefinido"
+                class="table table-striped table-bordered table-hover"
+                data-toggle="table"
+                data-search="true"
+                data-show-fullscreen="false"
+                data-search-on-enter-key="false"
+                data-search-time-out="1000"
+                data-pagination="true"
+                data-page-size="15"
+                data-page-list="[15, 25, 100, 500, Todo]"
+                data-locale="es-SP"
+                data-cookie="true"
+                data-cookie-id-table="Notas"
+                data-cookie-expire="12m"
+                data-cookie-path="/"
+                data-id-field="id"
+                data-sortable="true"
+                data-resizable="false"
+                >
+                <thead>
+                    <tr>
+                        <th data-visible="false" data-field="id"></th>
+                        <th data-field="nombre" data-sortable="true">{% trans 'Título' %}</th>
+                        <th class="th-minimo" data-field="inicio" data-sortable="true">{% trans 'Inicio' %}</th>
+                        <th data-field="duracion_txt" data-sortable="true">{% trans 'Duración' %}</th>
+                        <th class="text-center th-minimo" data-field="color" data-sortable="true">{% trans 'Color' %}</th>
+                        <th class="text-center th-minimo" data-sortable="false">{% trans 'Acciones' %}</th>
+                    </tr>
+                </thead>
+                {% for evt in agendaeventopredefinido_list %}
+                    <tr>
+                        <td>{{ evt.id }}</td>
+                        <td>{{ evt.titulo }}</td>
+                        <td>{{ evt.inicio }}</td>
+                        <td>{{ evt.duracion_txt }} Horas</td>
+                        <td><div class="color-cuadro" style='background-color:{{evt.color}};'></div></td>
+                        <td>
+                            <a href="{% url 'evento_predefinido_elimina' evt.id %}" class="text-danger" role="button" title="{% trans 'Eliminar evento predefinido' %}"><span class="fa fw fa-trash"></span></a>
+                            <a href="{% url 'evento_predefinido_edita' evt.id %}" class="text-primary accion" role="button" title="{% trans 'Editar evento predefinido' %}"><span class="fa fw fa-pencil"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+        </div>
+        <div class="col-4 d-flex justify-content-center">
+            <a type="button" class="btn btn-outline-secondary min-width-150" href="{% url 'calendario' %}">
+                <i class="fa fa-arrow-circle-left"></i>
+                {% trans 'Volver al calendario' %}
+            </a>
+        </div>
+        <div class="col-4">
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+	<script>
+        function accionFormatter(value, row, index) {
+            var eliminar = "{% url 'evento_predefinido_edita' 0 %}".replace('0', row.id);
+            var editar = "{% url 'evento_predefinido_elimina' 0 %}".replace('0', row.id);
+            return `
+                <a href="${eliminar}" class="text-danger accion" role="button" title="{% trans 'Eliminar evento' %}"><span class="fa fw fa-trash"></span></a>
+                <a href="${editar}" class="text-primary accion" role="button" title="{% trans 'Editar evento' %}"><span class="fa fw fa-pencil"></span></a>
+            `;
+        }
+
+        $(document).on('click','.clear_search',function(){
+            $('#id_predefinido').bootstrapTable('resetSearch');
+        });
+
+		$(function() {
+			$('#id_predefinido').bootstrapTable('refresh');
+            $('.search').find('input[type=search]').each(function(e) {
+                $(this).parent().prepend('<a href="#" style="padding-top:6px;margin-right:10px" class="close clear_search" data-dismiss="alert">×</a>');
+            });
+			$('.container-fluid').removeAttr('hidden');
+		});
+	</script>
+{% endblock scripts %}

@@ -1,0 +1,116 @@
+{% extends 'calendario/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block titlehead %}
+    {% trans 'Predefinido' %}
+{% endblock titlehead %}
+
+{% block content %}
+    <div class='row'>
+        <div class='col-md-12'>
+            <form action='' method='post' enctype='multipart/form-data' role='form' id='formulario'>
+                {% csrf_token %}
+                {{ form.data }}
+                <div class='card'>
+                    <div class='card-header'>
+                        <h3 class='panel-title text-secondary'>
+                            {% if create_view %}
+                                {% trans 'Nuevo Evento Predefinido' %}
+                            {% else %}
+                                {% trans 'Modificar Evento Predefinido' %}
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class='card-body'>
+                        <div class='form-row'>
+                            <div class='form-group col-md-8'>
+                                {{ form.titulo.errors }}
+                                <label for={{form.titulo.auto_id}} class='control-label'>
+                                    {{ form.titulo.label }}
+                                    {% if form.titulo.field.required %}<span class='required_fields'>*</span>{% endif %}
+                                </label>
+                                {{ form.titulo }}
+                                {% if form.titulo.help_text %}
+                                <p><small class='text-secondary'>{{ form.titulo.help_text|safe }}</small></p>
+                                {% endif %}
+                            </div>
+                            <div class='form-group col-md-4'>
+                                {{ form.color.errors }}
+                                <label for={{form.color.auto_id}} class='control-label'>
+                                    {{ form.color.label }}
+                                    {% if form.color.field.required %}<span class='required_fields'>*</span>{% endif %}
+                                </label>
+                                {{ form.color }}
+                                {% if form.color.help_text %}
+                                    <p><small class='text-secondary'>{{ form.color.help_text|safe }}</small></p>
+                                {% endif %}
+                            </div>
+                            <div class='col-md-12'>
+                                <div class='row'>
+                                    <div class='col-md-1'>
+                                        <label class='col-form-label offset-md-0'>{% trans 'Inicio' %}:</label>
+                                    </div>
+                                    <div class='col-md-2'>
+                                        <div class='input-group'>
+                                            {{ form.inicio }}
+                                            <div class='input-group-append'>
+                                                <span class='input-group-text' id='inicio'><i class='fa fa-clock-o'></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+<!--                                    <div class='col-md-2'>-->
+<!--                                        {{ form.inicio }}-->
+<!--                                    </div>-->
+                                    <div class='col-md-1 offset-md-1'>
+                                        <label class='col-form-label'>{% trans 'Duración' %}:</label>
+                                    </div>
+                                    <div class='col-md-2'>
+                                        {{ form.dias }}
+                                        <small class='text-secondary'>Días</small>
+                                    </div>
+                                    <div class='col-md-2'>
+                                        {{ form.horas }}
+                                        <small class='text-secondary'>Horas</small>
+                                    </div>
+                                    <div class='col-md-2'>
+                                        {{ form.minutos }}
+                                        <small class='text-secondary'>Minutos</small>
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='card-footer'>
+                        <a class='btn btn-danger' href='{% url "evento_predefinido_lista" %}'>
+                            <i class='fa fa-ban'></i>
+                            {% trans 'Cancelar' %}
+                        </a>
+                        <button type='submit' class='btn btn-success'>
+                            <i class='fa fa-check'></i>
+                            {% trans 'Guardar' %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+	<script>
+        {% if create_view %}
+            iniciaTimepicker($('#id_inicio'), new Date());
+        {% else %}
+            var hora = $('#id_inicio').val(),
+                date = moment('2022-10-10 ' + hora , 'YYYY-MM-DD HH:mm').toDate();
+            iniciaTimepicker($('#id_inicio'), date);
+        {% endif %}
+
+        var valores = $('#id_data').val();
+        if (valores.length > 0) {
+            data = JSON.parse(valores);
+            select2_set_value($('#id_color'), data.color);
+        }
+	</script>
+{% endblock scripts %}
