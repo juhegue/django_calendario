@@ -45,7 +45,7 @@ var handleCalendarDemo = function() {
                 </div>
                 <div class='col-4'>
                     <div class="custom-control custom-checkbox" style="margin-top:20px">
-                        <input type="checkbox" name="email" class="custom-control-input" id="id_email" ${email} checked>
+                        <input type="checkbox" name="email" class="custom-control-input" id="id_email" ${email}>
                         <label class="custom-control-label" for="id_email">
                             ${avisar_email}
                         </label>
@@ -55,7 +55,7 @@ var handleCalendarDemo = function() {
                 </div>
                 <div class='col-4'>
                     <div class="custom-control custom-checkbox" style="margin-top:20px">
-                        <input type="checkbox" name="movil" class="custom-control-input" id="id_movil" ${movil} ${movil_disable} checked>
+                        <input type="checkbox" name="movil" class="custom-control-input" id="id_movil" ${movil} ${movil_disable}>
                         <label class="custom-control-label" for="id_movil">
                             ${avisar_movil}
                         </label>
@@ -232,7 +232,7 @@ var handleCalendarDemo = function() {
                     end = '',
                     id = data.id,
                     color = info.event.backgroundColor;
-                formulario(start, end, title, id, color, '', '', false, '', false, 'disabled', fcm_token);
+                formulario(start, end, title, id, color, '', '', false, 'checked', false, 'disabled', fcm_token);
             } else {
                 data.start = moment(info.event.start).format('DD/MM/YYYY') + ' ' + data.inicio;
                 actualizaBD(data, 'receive');
@@ -257,6 +257,7 @@ var handleCalendarDemo = function() {
     });
 
     calendar.render();
+    calendar.setOption('height', 'auto');
 };
 
 var Calendar = function () {
