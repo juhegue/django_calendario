@@ -63,6 +63,8 @@ class AgendaEventoPredefinido(ActualizaMixin):
     inicio = models.CharField(verbose_name=_('Hora inicio'), max_length=5, default='00:00')
     duracion = models.PositiveIntegerField(verbose_name=_('Minutos duración'), default=0)
     titulo = models.CharField(verbose_name=_('Título'), max_length=250)
+    aviso_email = models.BooleanField(verbose_name=_('Avisar con email'), default=False)
+    aviso_movil = models.BooleanField(verbose_name=_('Avisar con móvil'), default=False)
 
     class Meta:
         verbose_name = _('Agenda evento predefinido')

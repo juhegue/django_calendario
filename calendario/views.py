@@ -155,7 +155,8 @@ class CalendarioView(LoginRequiredMixin, TemplateView):
                                                                                      pre.inicio == '0:00') else False
                         aevt.inicio = inicio
                         aevt.fin = aevt.inicio + timedelta(minutes=pre.duracion)
-                        aevt.aviso_movil = True
+                        aevt.aviso_movil = pre.aviso_movil
+                        aevt.aviso_email = pre.aviso_email
                     else:
                         if accion in ['resize', 'drop']:
                             aevt = AgendaEvento.objects.filter(pk=data.get('id')).first()

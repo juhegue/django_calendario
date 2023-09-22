@@ -30,12 +30,14 @@ class EventoPedefinidoForm(forms.ModelForm):
 
     class Meta:
         model = AgendaEventoPredefinido
-        fields = ('titulo', 'inicio')
+        fields = ('titulo', 'inicio', 'aviso_email', 'aviso_movil')
         labels = {
         }
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'inicio': forms.TextInput(attrs={'class': 'form-control', 'aria-describedby': 'inicio'})
+            'inicio': forms.TextInput(attrs={'class': 'form-control', 'aria-describedby': 'inicio'}),
+            'aviso_email': forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
+            'aviso_movil': forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
         }
         required = ('titulo', )
 

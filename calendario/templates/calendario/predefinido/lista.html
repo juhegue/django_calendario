@@ -59,6 +59,8 @@
                         <th data-field="nombre" data-sortable="true">{% trans 'Título' %}</th>
                         <th class="th-minimo" data-field="inicio" data-sortable="true">{% trans 'Inicio' %}</th>
                         <th data-field="duracion_txt" data-sortable="true">{% trans 'Duración' %}</th>
+                        <th class="text-center" data-field="aviso_email" data-sortable="true" data-formatter="boolFormat">{% trans 'Aviso con Email' %}</th>
+                        <th class="text-center" data-field="aviso_movil" data-sortable="true" data-formatter="boolFormat">{% trans 'Aviso con Móvil' %}</th>
                         <th class="text-center th-minimo" data-field="color" data-sortable="true">{% trans 'Color' %}</th>
                         <th class="text-center th-minimo" data-sortable="false">{% trans 'Acciones' %}</th>
                     </tr>
@@ -68,7 +70,9 @@
                         <td>{{ evt.id }}</td>
                         <td>{{ evt.titulo }}</td>
                         <td>{{ evt.inicio }}</td>
-                        <td>{{ evt.duracion_txt }} Horas</td>
+                        <td>{{ evt.duracion_txt }} {% trans 'Horas' %}</td>
+                        <td>{{ evt.aviso_email }}</td>
+                        <td>{{ evt.aviso_movil }}</td>
                         <td><div class="color-cuadro" style='background-color:{{evt.color}};'></div></td>
                         <td>
                             <a href="{% url 'evento_predefinido_elimina' evt.id %}" class="text-danger" role="button" title="{% trans 'Eliminar evento predefinido' %}"><span class="fa fw fa-trash"></span></a>
@@ -95,6 +99,12 @@
 
 {% block scripts %}
 	<script>
+        function boolFormat(value, row, index) {
+            if (value == 'True')
+                return '<img src={% static "admin/img/icon-yes.svg" %} alt="True"/>';
+            return '<img src={% static "admin/img/icon-no.svg" %} alt="False"/>';
+        }
+
         function accionFormatter(value, row, index) {
             var eliminar = "{% url 'evento_predefinido_edita' 0 %}".replace('0', row.id);
             var editar = "{% url 'evento_predefinido_elimina' 0 %}".replace('0', row.id);

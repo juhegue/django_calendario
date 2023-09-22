@@ -93,8 +93,8 @@ def procesa_eventos():
                                                inicio__gte=inicio,
                                                inicio__lte=ahora):
         logger.info(f"evento inicio:{qevento.id}")
-        if qevento.aviso_email:
-            envia_mail(qevento)
+        # if qevento.aviso_email:
+        #     envia_mail(qevento)
 
         if qevento.aviso_movil:
             envia_movil(qevento)
