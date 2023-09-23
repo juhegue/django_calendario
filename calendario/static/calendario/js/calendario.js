@@ -27,7 +27,7 @@ var handleCalendarDemo = function() {
         });
     }
 
-    function formulario(start, end, title, id, color, completo, email, e_enviado, movil, m_enviado, class_cancel, movil_disable) {
+    function formulario(start, end, title, id, color, completo, email, e_enviado, movil, m_enviado) {
         var msg_e_enviado, msg_m_enviado;
         e_enviado ? msg_e_enviado = `<small class='text-danger'> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ${mail_enviado}.</small>` :msg_e_enviado = '';
         m_enviado ? msg_m_enviado = `<small class='text-danger'> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ${movil_enviado}.</small>` :msg_m_enviado = '';
@@ -103,7 +103,7 @@ var handleCalendarDemo = function() {
             buttons: {
                 del: {
                     label: 'Eliminar',
-                    className: 'btn-danger ' + class_cancel,
+                    className: 'btn-danger',
                     callback: function (result) {
                         var data = getFormData($('form'));
                         actualizaBD(data, 'borra');
@@ -218,7 +218,7 @@ var handleCalendarDemo = function() {
                 (data.aviso_movil == 'True') ? movil = 'checked' : movil = '';
                 (data.email_enviado == 'None') ? e_enviado = false : e_enviado = true;
                 (data.movil_enviado == 'None') ? m_enviado = false : m_enviado = true;
-                formulario(start, end, title, id, color, completo, email, e_enviado, movil, m_enviado, '', fcm_token);
+                formulario(start, end, title, id, color, completo, email, e_enviado, movil, m_enviado);
             });
 
         },
@@ -232,7 +232,7 @@ var handleCalendarDemo = function() {
                     end = '',
                     id = data.id,
                     color = info.event.backgroundColor;
-                formulario(start, end, title, id, color, '', '', false, 'checked', false, 'disabled', fcm_token);
+                formulario(start, end, title, id, color, '', '', false, 'checked', false);
             } else {
                 data.start = moment(info.event.start).format('DD/MM/YYYY') + ' ' + data.inicio;
                 actualizaBD(data, 'receive');
@@ -254,6 +254,10 @@ var handleCalendarDemo = function() {
             }
             actualizaBD(data, 'drop');
         },
+        dateClick: function(info) {
+            var start = moment(info.date).format('DD/MM/YYYY HH:mm');
+            formulario(start, '', '', 0, '', '', '', false, 'checked', false);
+        }
     });
 
     calendar.render();

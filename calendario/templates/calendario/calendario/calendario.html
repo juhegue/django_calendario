@@ -31,6 +31,8 @@
 		<div class="row justify-content-md-center">
 			<div class="col-md-3 order-md-1">
 				<div id="external-events" class="fc-event-list">
+{% comment %}
+Ya no se usa, ahora se crea el nuevo evento haciendo click
 					<div class="fc-event" data-color="#b6c2c9" data-event='{ "title": "{% trans "Nuevo Evento" %}", "duration": "24:00", "id": "0"}' title="{% trans 'Arraste a cualquier día para crear el evento' %}">
 						<div class="input-group">
 							 <div class="input-group-prepend btn-block fc-event-icon">
@@ -44,6 +46,7 @@
 						</div>
 					</div>
 					<hr class="" />
+{% endcomment %}
 					<a class="btn btn-secondary btn-block" href="{% url 'evento_predefinido_lista' %}" title="{% trans 'Crear eventos predefinidos' %}">
 						<i class="fa fa-eye"></i>
 						{% trans 'Predefinidos' %}
@@ -79,7 +82,7 @@
 	<script type="text/javascript">
 		var colores = url_events = "{{ request.path }}",
 			csrf_token = "{{ csrf_token }}",
-			fcm_token = ("{{ request.user.fcm_token }}" == "None") ? 'disabled': '',
+			movil_disable = {% if request.user.fcm.token %} '' {% else %} 'disabled' {% endif %},
 			title_eliminar = "{% trans 'Eliminar evento' %}",
 			text_eliminar = "{% trans '¿Esta seguro de eliminar el evento?' %}",
 			text_aceptar = "{% trans 'Aceptar' %}",
