@@ -137,6 +137,12 @@ var handleCalendarDemo = function() {
                     }
                 }
             }
+        }).on('shown.bs.modal', function(e) {
+            $('#id_fin').focus(function() {
+                var valida = moment(end, "DD/MM/YYYY HH:mm").isValid();
+                if (!end || !valida)
+                    $(this).val( $('#id_inicio').val() );
+            });
         });
 
         iniciaColorAjax($('.color-select2'));
